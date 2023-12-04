@@ -579,8 +579,16 @@ export const getServerSideProps: GetServerSideProps<{
     )
   } catch (e) {}
 
+  // return {
+  //   props: { ssr: { topSellingCollections } },
+  // }
+
+  // Hack to go to collections view for now
   return {
-    props: { ssr: { topSellingCollections } },
+    redirect: {
+      destination: `/${chain.routePrefix}/collections/trending`,
+      permanent: true,
+    },
   }
 }
 

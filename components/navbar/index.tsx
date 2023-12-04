@@ -65,12 +65,7 @@ const Navbar = () => {
         <Flex align="center">
           <Link href={`/${routePrefix}`}>
             <Box css={{ width: 46, cursor: 'pointer' }}>
-              <Image
-                src="/reservoirLogo.svg"
-                width={36}
-                height={36}
-                alt="Reservoir"
-              />
+              <Image src="/frwc-logo.png" width={100} height={50} alt="FRWC Logo" />
             </Box>
           </Link>
         </Flex>
@@ -115,10 +110,10 @@ const Navbar = () => {
           <Link href={`/${routePrefix}`}>
             <Box css={{ cursor: 'pointer' }}>
               <Image
-                src="/reservoirLogo.svg"
-                width={36}
-                height={36}
-                alt="Reservoir"
+                src="/frwc-logo.png"
+                width={100}
+                height={50}
+                alt="FRWC Logo"
               />
             </Box>
           </Link>
@@ -129,9 +124,9 @@ const Navbar = () => {
               ml: '$5',
             }}
           >
-            <Link href={`/${routePrefix}`}>
+            {/* <Link href={`/${routePrefix}`}>
               <NavItem>Explore</NavItem>
-            </Link>
+            </Link> */}
             <Link href={`/${routePrefix}/collections/trending`}>
               <NavItem>Trending</NavItem>
             </Link>
