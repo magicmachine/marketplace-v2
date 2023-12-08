@@ -1,6 +1,6 @@
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { useTrendingCollections } from '@reservoir0x/reservoir-kit-ui'
+import { useCollections, useTrendingCollections } from '@reservoir0x/reservoir-kit-ui'
 import { OpenSeaVerified } from 'components/common/OpenSeaVerified'
 import { NAVBAR_HEIGHT } from 'components/navbar'
 import {
@@ -24,10 +24,14 @@ type TrendingCollections = NonNullable<
   ReturnType<typeof useTrendingCollections>['data']
 >
 
+type Collections = NonNullable<
+  ReturnType<typeof useCollections>['data']
+>
+
 type Props = {
-  collections: TrendingCollections
+  collections: Collections
   loading?: boolean
-  volumeKey: keyof NonNullable<TrendingCollections[0]['collectionVolume']>
+  volumeKey: keyof NonNullable<Collections[0]['volume']>
 }
 const gridColumns = {
   gridTemplateColumns: '520px repeat(5, 0.5fr) 250px',
@@ -100,7 +104,7 @@ export const CollectionRankingsTable: FC<Props> = ({
 }
 
 type RankingsTableRowProps = {
-  collection: TrendingCollections[0]
+  collection: Collections[0]
   rank: number
   volumeKey: ComponentPropsWithoutRef<
     typeof CollectionRankingsTable
@@ -174,14 +178,14 @@ const RankingsTableRow: FC<RankingsTableRowProps> = ({
           </Box>
           <Flex direction="column" align="end" css={{ gap: '$1' }}>
             <FormatCryptoCurrency
-              amount={collection?.collectionVolume?.[volumeKey]}
+              amount={collection?.volume?.[volumeKey]}
               maximumFractionDigits={1}
               logoHeight={16}
               textStyle="subtitle1"
             />
             {volumeKey !== 'allTime' && (
               <PercentChange
-                value={collection?.collectionVolume?.[volumeKey]}
+                value={collection?.volume?.[volumeKey]}
                 decimals={1}
               />
             )}
@@ -273,7 +277,7 @@ const RankingsTableRow: FC<RankingsTableRowProps> = ({
             css={{ height: '100%' }}
           >
             <FormatCryptoCurrency
-              amount={collection?.collectionVolume?.[volumeKey]}
+              amount={collection?.volume?.[volumeKey]}
               textStyle="subtitle1"
               logoHeight={14}
             />

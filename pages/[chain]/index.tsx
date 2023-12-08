@@ -246,13 +246,13 @@ const Home: NextPage<Props> = ({ ssr }) => {
               }}
             >
               <Flex direction="column">
-                {isSSR || !isMounted ? null : (
+                {/* {isSSR || !isMounted ? null : (
                   <CollectionRankingsTable
                     collections={trendingCollections || []}
                     volumeKey={volumeKey}
                     loading={isTrendingCollectionsValidating}
                   />
-                )}
+                )} */}
                 <Box
                   css={{
                     display: isTrendingCollectionsValidating ? 'none' : 'block',
