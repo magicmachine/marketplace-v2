@@ -1,21 +1,31 @@
-import { useCollections } from '@reservoir0x/reservoir-kit-ui'
+import {
+  useCollections,
+  useTrendingCollections,
+} from '@reservoir0x/reservoir-kit-ui'
 import { paths } from '@reservoir0x/reservoir-sdk'
 import { Head } from 'components/Head'
 import Layout from 'components/Layout'
+import ChainToggle from 'components/common/ChainToggle'
 import CollectionsTimeDropdown, {
   CollectionsSortingOption,
 } from 'components/common/CollectionsTimeDropdown'
+import LoadingSpinner from 'components/common/LoadingSpinner'
 import { Box, Flex, Text } from 'components/primitives'
 import { CollectionRankingsTable } from 'components/rankings/CollectionRankingsTable'
+import { ChainContext } from 'context/ChainContextProvider'
 import { useMounted } from 'hooks'
 import { GetServerSideProps, InferGetServerSidePropsType, NextPage } from 'next'
-import { ComponentPropsWithoutRef, useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
+import {
+  ComponentPropsWithoutRef,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
 import { useMediaQuery } from 'react-responsive'
 import supportedChains, { DefaultChain } from 'utils/chains'
 import fetcher from 'utils/fetcher'
 import { NORMALIZE_ROYALTIES } from '../../../_app'
-import LoadingSpinner from 'components/common/LoadingSpinner'
-import { set } from 'lodash'
 
 type Props = InferGetServerSidePropsType<typeof getServerSideProps>
 
@@ -25,26 +35,38 @@ const IndexPage: NextPage<Props> = ({ ssr }) => {
   const isSSR = typeof window === 'undefined'
   const isMounted = useMounted()
   const compactToggleNames = useMediaQuery({ query: '(max-width: 800px)' })
-  const [sortByTime, setSortByTime] =
-    useState<CollectionsSortingOption>('30DayVolume')
+  const [sortByTime, setSortByTime] = useState<CollectionsSortingOption>('1d')
 
   const [collections, setCollections] = useState<
     ReturnType<typeof useCollections>['data']
   >([])
 
-  const [isFetchingPage, setIsFetchingPage] = useState(false);
+  const [isFetchingPage, setIsFetchingPage] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
       setCollections([])
-      setIsFetchingPage(true);
+      setIsFetchingPage(true)
 
       let _collections: ReturnType<typeof useCollections>['data'] = []
       for (let i = 0; i < supportedChains.length; i++) {
         const chain = supportedChains[i]
+        let filterKey: paths['/collections/v7']['get']['parameters']['query']['sortBy']
+        switch (sortByTime) {
+          case '30d':
+            filterKey = '30DayVolume'
+            break
+          case '7d':
+            filterKey = '7DayVolume'
+            break
+          case '1d':
+            filterKey = '1DayVolume'
+            break
+        }
+
         const collectionQuery: paths['/collections/v7']['get']['parameters']['query'] =
           {
-            sortBy: sortByTime,
+            sortBy: filterKey,
             normalizeRoyalties: NORMALIZE_ROYALTIES,
             limit: 20,
           }
@@ -68,7 +90,7 @@ const IndexPage: NextPage<Props> = ({ ssr }) => {
       }
 
       setCollections(_collections)
-      setIsFetchingPage(false);
+      setIsFetchingPage(false)
     }
 
     fetchData()
@@ -81,14 +103,14 @@ const IndexPage: NextPage<Props> = ({ ssr }) => {
   >['volumeKey'] = 'allTime'
 
   switch (sortByTime) {
-    case '1DayVolume':
-      volumeKey = '1day'
+    case '30d':
+      volumeKey = '30day'
       break
-    case '7DayVolume':
+    case '7d':
       volumeKey = '7day'
       break
-    case '30DayVolume':
-      volumeKey = '30day'
+    case '1d':
+      volumeKey = '1day'
       break
   }
 
@@ -143,14 +165,8 @@ const IndexPage: NextPage<Props> = ({ ssr }) => {
               loading={isFetchingPage}
             />
           )}
-          {/* <Box
-            ref={loadMoreRef}
-            css={{
-              display: isFetchingPage ? 'none' : 'block',
-            }}
-          ></Box> */}
         </Flex>
-        {(isFetchingPage ) && (
+        {isFetchingPage && (
           <Flex align="center" justify="center" css={{ py: '$4' }}>
             <LoadingSpinner />
           </Flex>

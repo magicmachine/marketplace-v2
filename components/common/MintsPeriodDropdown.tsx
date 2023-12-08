@@ -1,9 +1,7 @@
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
-import {
-  useTrendingCollections
-} from '@reservoir0x/reservoir-kit-ui'
+import { useTrendingMints } from '@reservoir0x/reservoir-kit-ui'
 import {
   DropdownMenuContent,
   DropdownMenuItem,
@@ -11,34 +9,22 @@ import {
 import { FC } from 'react'
 import { Box, Button, Text } from '../primitives'
 
-export type CollectionsSortingOption = NonNullable<
-  Exclude<
-    Parameters<typeof useTrendingCollections>[0],
-    false | undefined
-  >['period']
+export type MintsSortingOption = NonNullable<
+  Exclude<Parameters<typeof useTrendingMints>[0], false | undefined>['period']
 >
 
-const sortingOptions: CollectionsSortingOption[] = [
-  '10m',
-  '1d',
-  '1h',
-  '30d',
-  '30m',
+const sortingOptions: MintsSortingOption[] = [
   '5m',
+  '10m',
+  '30m',
+  '1h',
   '6h',
-  '7d',
+  '24h',
 ]
 
-const nameForSortingOption = (
-  option: CollectionsSortingOption,
-  compact: boolean
-) => {
+const nameForSortingOption = (option: MintsSortingOption, compact: boolean) => {
   switch (option) {
-    case '30d':
-      return compact ? '30d' : '30 days'
-    case '7d':
-      return compact ? '7d' : '7 days'
-    case '1d':
+    case '24h':
       return compact ? '24h' : '24 hours'
     case '6h':
       return compact ? '6h' : '6 hours'
@@ -55,11 +41,11 @@ const nameForSortingOption = (
 
 type Props = {
   compact?: boolean
-  option: CollectionsSortingOption
-  onOptionSelected: (option: CollectionsSortingOption) => void
+  option: MintsSortingOption
+  onOptionSelected: (option: MintsSortingOption) => void
 }
 
-const CollectionsTimeDropdown: FC<Props> = ({
+const MintsPeriodDropdown: FC<Props> = ({
   compact = false,
   option,
   onOptionSelected,
@@ -96,9 +82,7 @@ const CollectionsTimeDropdown: FC<Props> = ({
           <DropdownMenuItem
             key={optionItem}
             css={{ py: '$3' }}
-            onClick={() =>
-              onOptionSelected(optionItem as CollectionsSortingOption)
-            }
+            onClick={() => onOptionSelected(optionItem as MintsSortingOption)}
           >
             {nameForSortingOption(optionItem, false)}
           </DropdownMenuItem>
@@ -108,4 +92,4 @@ const CollectionsTimeDropdown: FC<Props> = ({
   )
 }
 
-export default CollectionsTimeDropdown
+export default MintsPeriodDropdown

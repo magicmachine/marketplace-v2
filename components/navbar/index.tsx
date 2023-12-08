@@ -1,21 +1,20 @@
-import { useRef } from 'react'
-import { Box, Flex, Card } from '../primitives'
-import GlobalSearch from './GlobalSearch'
-import { useRouter } from 'next/router'
-import { useHotkeys } from 'react-hotkeys-hook'
-import Link from 'next/link'
-import Image from 'next/image'
 import { ConnectWalletButton } from 'components/ConnectWalletButton'
-import NavItem from './NavItem'
-import ThemeSwitcher from './ThemeSwitcher'
+import { AccountSidebar } from 'components/navbar/AccountSidebar'
+import { useTheme } from 'next-themes'
+import Image from 'next/image'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
+import { useRef } from 'react'
+import { useHotkeys } from 'react-hotkeys-hook'
+import { useMediaQuery } from 'react-responsive'
+import { useAccount } from 'wagmi'
+import { useMarketplaceChain, useMounted } from '../../hooks'
+import { Box, Card, Flex } from '../primitives'
+import CartButton from './CartButton'
+import GlobalSearch from './GlobalSearch'
 import HamburgerMenu from './HamburgerMenu'
 import MobileSearch from './MobileSearch'
-import { useTheme } from 'next-themes'
-import { useMediaQuery } from 'react-responsive'
-import { useMarketplaceChain, useMounted } from '../../hooks'
-import { useAccount } from 'wagmi'
-import CartButton from './CartButton'
-import { AccountSidebar } from 'components/navbar/AccountSidebar'
+import NavItem from './NavItem'
 
 import * as HoverCard from '@radix-ui/react-hover-card'
 
@@ -65,7 +64,12 @@ const Navbar = () => {
         <Flex align="center">
           <Link href={`/${routePrefix}`}>
             <Box css={{ width: 46, cursor: 'pointer' }}>
-              <Image src="/frwc-logo.png" width={100} height={50} alt="FRWC Logo" />
+              <Image
+                src="/frwc-logo.png"
+                width={100}
+                height={50}
+                alt="FRWC Logo"
+              />
             </Box>
           </Link>
         </Flex>
@@ -111,8 +115,8 @@ const Navbar = () => {
             <Box css={{ cursor: 'pointer' }}>
               <Image
                 src="/frwc-logo.png"
-                width={100}
-                height={50}
+                width={180}
+                height={90}
                 alt="FRWC Logo"
               />
             </Box>
@@ -124,44 +128,21 @@ const Navbar = () => {
               ml: '$5',
             }}
           >
-            {/* <Link href={`/${routePrefix}`}>
-              <NavItem>Explore</NavItem>
-            </Link> */}
-            <Link href={`/${routePrefix}/collections/trending`}>
-              <NavItem>Trending</NavItem>
-            </Link>
 
-            {/* <HoverCard.Root openDelay={200}>
-              <HoverCard.Trigger>
-                <Link href={`/${routePrefix}/collection-rankings`}>
-                  <NavItem
-                    active={router.pathname.includes('collection-rankings')}
-                  >
-                    NFTs
-                  </NavItem>
-                </Link>
-              </HoverCard.Trigger>
+            <HoverCard.Root openDelay={200}>
               <HoverCard.Content sideOffset={24} align="start">
-                <Card css={{ p: 24, width: 240 }}>
+                <Card css={{ p: 24, width: 240, border: '1px solid $gray4' }}>
                   <Flex css={{ gap: '$4' }} direction="column">
-                    <Link href={`/${routePrefix}/collection-rankings`}>
-                      <NavItem
-                        active={router.pathname.includes('collection-rankings')}
-                      >
-                        Trending Collections
-                      </NavItem>
+                    <Link href={`/${routePrefix}/collections/trending`}>
+                      <NavItem>Collections</NavItem>
                     </Link>
-                    <Link href={`/${routePrefix}/collection-rankings`}>
-                      <NavItem
-                        active={router.pathname.includes('collection-rankings')}
-                      >
-                        Trending Mints
-                      </NavItem>
+                    <Link href={`/${routePrefix}/mints/trending`}>
+                      <NavItem>Mints</NavItem>
                     </Link>
                   </Flex>
                 </Card>
               </HoverCard.Content>
-            </HoverCard.Root> */}
+            </HoverCard.Root>
 
             {false && (
               <Link href={`/${routePrefix}/collections/minting`}>
