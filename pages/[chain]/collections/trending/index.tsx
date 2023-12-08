@@ -1,87 +1,80 @@
-import { GetServerSideProps, InferGetServerSidePropsType, NextPage } from 'next'
-import { Text, Flex, Box } from 'components/primitives'
-import Layout from 'components/Layout'
-import {
-  ComponentPropsWithoutRef,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
-import { useMediaQuery } from 'react-responsive'
-import { useMounted } from 'hooks'
-import { paths } from '@reservoir0x/reservoir-sdk'
 import { useCollections } from '@reservoir0x/reservoir-kit-ui'
-import fetcher from 'utils/fetcher'
-import { NORMALIZE_ROYALTIES } from '../../../_app'
-import supportedChains, { DefaultChain } from 'utils/chains'
-import { CollectionRankingsTable } from 'components/rankings/CollectionRankingsTable'
-import { useIntersectionObserver } from 'usehooks-ts'
-import LoadingSpinner from 'components/common/LoadingSpinner'
+import { paths } from '@reservoir0x/reservoir-sdk'
+import { Head } from 'components/Head'
+import Layout from 'components/Layout'
 import CollectionsTimeDropdown, {
   CollectionsSortingOption,
 } from 'components/common/CollectionsTimeDropdown'
-import ChainToggle from 'components/common/ChainToggle'
-import { Head } from 'components/Head'
-import { ChainContext } from 'context/ChainContextProvider'
-import { useRouter } from 'next/router'
+import { Box, Flex, Text } from 'components/primitives'
+import { CollectionRankingsTable } from 'components/rankings/CollectionRankingsTable'
+import { useMounted } from 'hooks'
+import { GetServerSideProps, InferGetServerSidePropsType, NextPage } from 'next'
+import { ComponentPropsWithoutRef, useEffect, useState } from 'react'
+import { useMediaQuery } from 'react-responsive'
+import supportedChains, { DefaultChain } from 'utils/chains'
+import fetcher from 'utils/fetcher'
+import { NORMALIZE_ROYALTIES } from '../../../_app'
+import LoadingSpinner from 'components/common/LoadingSpinner'
+import { set } from 'lodash'
 
 type Props = InferGetServerSidePropsType<typeof getServerSideProps>
 
+const useBatchCollections = () => {}
+
 const IndexPage: NextPage<Props> = ({ ssr }) => {
-  const router = useRouter()
   const isSSR = typeof window === 'undefined'
   const isMounted = useMounted()
   const compactToggleNames = useMediaQuery({ query: '(max-width: 800px)' })
   const [sortByTime, setSortByTime] =
-    useState<CollectionsSortingOption>('1DayVolume')
+    useState<CollectionsSortingOption>('30DayVolume')
 
-  let collectionQuery: Parameters<typeof useCollections>['0'] = {
-    limit: 20,
-    sortBy: sortByTime,
-    includeMintStages: true,
-  }
+  const [collections, setCollections] = useState<
+    ReturnType<typeof useCollections>['data']
+  >([])
 
-  const { chain, switchCurrentChain } = useContext(ChainContext)
+  const [isFetchingPage, setIsFetchingPage] = useState(false);
 
   useEffect(() => {
-    if (router.query.chain) {
-      let chainIndex: number | undefined
+    const fetchData = async () => {
+      setCollections([])
+      setIsFetchingPage(true);
+
+      let _collections: ReturnType<typeof useCollections>['data'] = []
       for (let i = 0; i < supportedChains.length; i++) {
-        if (supportedChains[i].routePrefix == router.query.chain) {
-          chainIndex = supportedChains[i].id
+        const chain = supportedChains[i]
+        const collectionQuery: paths['/collections/v7']['get']['parameters']['query'] =
+          {
+            sortBy: sortByTime,
+            normalizeRoyalties: NORMALIZE_ROYALTIES,
+            limit: 20,
+          }
+
+        if (chain.collectionSetId) {
+          collectionQuery.collectionsSetId = chain.collectionSetId
+        } else if (chain.community) {
+          collectionQuery.community = chain.community
         }
+        const response = await fetcher(
+          `${chain.reservoirBaseUrl}/collections/v7`,
+          collectionQuery,
+          {
+            headers: {
+              'x-api-key': process.env.RESERVOIR_API_KEY || '',
+            },
+          }
+        )
+
+        _collections.push(...response.data.collections)
       }
-      if (chainIndex !== -1 && chainIndex) {
-        switchCurrentChain(chainIndex)
-      }
+
+      setCollections(_collections)
+      setIsFetchingPage(false);
     }
-  }, [router.query])
 
-  if (chain.collectionSetId) {
-    collectionQuery.collectionsSetId = chain.collectionSetId
-  } else if (chain.community) {
-    collectionQuery.community = chain.community
-  }
+    fetchData()
+  }, [sortByTime])
 
-  const { data, fetchNextPage, isFetchingPage, isValidating } = useCollections(
-    collectionQuery,
-    {
-      fallbackData: [ssr.collection],
-    }
-  )
-
-  let collections = data || []
-
-  const loadMoreRef = useRef<HTMLDivElement>(null)
-  const loadMoreObserver = useIntersectionObserver(loadMoreRef, {})
-
-  useEffect(() => {
-    let isVisible = !!loadMoreObserver?.isIntersecting
-    if (isVisible) {
-      fetchNextPage()
-    }
-  }, [loadMoreObserver?.isIntersecting])
+  console.log('Collections:', collections)
 
   let volumeKey: ComponentPropsWithoutRef<
     typeof CollectionRankingsTable
@@ -130,7 +123,7 @@ const IndexPage: NextPage<Props> = ({ ssr }) => {
             }}
           >
             <Text style="h4" as="h4">
-              Trending Collections
+              Collections
             </Text>
             <Flex align="center" css={{ gap: '$4' }}>
               <CollectionsTimeDropdown
@@ -140,24 +133,24 @@ const IndexPage: NextPage<Props> = ({ ssr }) => {
                   setSortByTime(option)
                 }}
               />
-              <ChainToggle />
+              {/* <ChainToggle /> */}
             </Flex>
           </Flex>
           {isSSR || !isMounted ? null : (
             <CollectionRankingsTable
               collections={collections}
               volumeKey={volumeKey}
-              loading={isValidating}
+              loading={isFetchingPage}
             />
           )}
-          <Box
+          {/* <Box
             ref={loadMoreRef}
             css={{
               display: isFetchingPage ? 'none' : 'block',
             }}
-          ></Box>
+          ></Box> */}
         </Flex>
-        {(isFetchingPage || isValidating) && (
+        {(isFetchingPage ) && (
           <Flex align="center" justify="center" css={{ py: '$4' }}>
             <LoadingSpinner />
           </Flex>

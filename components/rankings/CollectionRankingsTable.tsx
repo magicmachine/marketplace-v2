@@ -15,7 +15,7 @@ import {
 } from 'components/primitives'
 import Img from 'components/primitives/Img'
 import { PercentChange } from 'components/primitives/PercentChange'
-import { useMarketplaceChain } from 'hooks'
+import supportedChains, { DefaultChain } from 'utils/chains'
 import Link from 'next/link'
 import { ComponentPropsWithoutRef, FC, useMemo } from 'react'
 import { useMediaQuery } from 'react-responsive'
@@ -110,7 +110,10 @@ const RankingsTableRow: FC<RankingsTableRowProps> = ({
   rank,
   volumeKey,
 }) => {
-  const { routePrefix } = useMarketplaceChain()
+  const { routePrefix } = supportedChains.find(
+    (supportedChain) => supportedChain.id === collection.chainId
+  ) ?? DefaultChain
+  
   const isSmallDevice = useMediaQuery({ maxWidth: 900 })
 
   const collectionImage = useMemo(() => {

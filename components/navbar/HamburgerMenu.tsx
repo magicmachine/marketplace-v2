@@ -148,7 +148,7 @@ const HamburgerMenu = () => {
               </Text>
             </Link>
 
-            <Anchor
+            {/* <Anchor
               href="https://docs.reservoir.tools/docs"
               target="_blank"
               css={{
@@ -160,7 +160,7 @@ const HamburgerMenu = () => {
               }}
             >
               <Text style="subtitle1">Developers</Text>
-            </Anchor>
+            </Anchor> */}
             <Link href="/portfolio" legacyBehavior>
               <Flex
                 direction="column"

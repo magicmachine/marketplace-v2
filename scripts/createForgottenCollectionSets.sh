@@ -9,10 +9,18 @@ declare -a ethereum_contracts=(
     "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95 # Warriors"
     "0x7c104b4db94494688027cced1e2ebfb89642c80f # Athenaeum"
     "0xda5cf3a42ebacd2d8fcb53830b1025e01d37832d # Locks"
+    "0x31158181b4b91a423bfdc758fc3bf8735711f9c5 # Flames"
+    "0x59775fd5f266c216d7566eb216153ab8863c9c84 # Boxes"
+    "0x5d4aa6ff9de7963ead5a17b454dc1093ca9e98e7 # Rings"
 )
 declare -a arbitrum_contracts=(
     "0xa3abf5552cc5e1477009bbf90d0b8d2689883891 # Runiverse items" 
 )
+
+declare -a arbitrum_contracts=(
+    "0xa3abf5552cc5e1477009bbf90d0b8d2689883891 # Runiverse items" 
+)
+
 
 ethereum_api_url="https://api.reservoir.tools/collections-sets/v1"
 arbitrum_api_url="https://api-arbitrum.reservoir.tools/collections-sets/v1"
