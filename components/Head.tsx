@@ -14,9 +14,9 @@ type Props = {
  * @param description - The description of the page.
  */
 export const Head: FC<Props> = ({
-  ogImage = 'https://explorer.reservoir.tools/og-image.png',
-  title = 'Reservoir | Multi-Chain NFT Explorer',
-  description = 'Reservoir Multi-Chain NFT Explorer is an open source NFT explorer built with Reservoir.',
+  ogImage = 'https://forgottenrunes.com/static/img/header.png',
+  title = 'Forgotten Market | The Marketplace For Forgotten Runes',
+  description = 'Forgotten Market is the marketplace for Forgotten Runes',
 }) => {
   return (
     <NextHead>
@@ -31,7 +31,7 @@ export const Head: FC<Props> = ({
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:site" content="@reservoir0x" />
+      <meta name="twitter:site" content="@forgottenrunes" />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={ogImage} />
