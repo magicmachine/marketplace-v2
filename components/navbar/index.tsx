@@ -65,7 +65,7 @@ const Navbar = () => {
           <Link href={`/${routePrefix}`}>
             <Box css={{ width: 46, cursor: 'pointer' }}>
               <Image
-                src="/frwc-logo.png"
+                src="/logo/forgotten-runes-logo-white.png"
                 width={100}
                 height={50}
                 alt="FRWC Logo"
@@ -114,7 +114,7 @@ const Navbar = () => {
           <Link href={`/${routePrefix}`}>
             <Box css={{ cursor: 'pointer' }}>
               <Image
-                src="/frwc-logo.png"
+                src="/logo/forgotten-runes-logo-white.png"
                 width={180}
                 height={90}
                 alt="FRWC Logo"
@@ -128,7 +128,6 @@ const Navbar = () => {
               ml: '$5',
             }}
           >
-
             <HoverCard.Root openDelay={200}>
               <HoverCard.Content sideOffset={24} align="start">
                 <Card css={{ p: 24, width: 240, border: '1px solid $gray4' }}>
