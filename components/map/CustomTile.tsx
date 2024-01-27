@@ -53,44 +53,6 @@ export class CustomTileLayerClass extends L.TileLayer {
     })
     return tileUrl
   }
-
-  // Override getTileUrl method
-  //   getTileUrl(coords: L.Coords): string {
-  //     const baseZoom = 18
-  //     const scale = Math.pow(2, baseZoom - coords.z)
-  //     const scaledX = coords.x * scale
-  //     const scaledY = coords.y * scale
-
-  //     const tile = this.mapTiles.find(
-  //       (t) =>
-  //         scaledX >= t.x &&
-  //         scaledX <= t.x + t.width &&
-  //         scaledY >= t.y &&
-  //         scaledY <= t.y + t.height
-  //     )
-  //     // const tile = this.mapTiles.find(
-  //     //   (t) =>
-  //     //     coords.x >= t.x &&
-  //     //     coords.x <= t.x + t.width &&
-  //     //     coords.y >= t.y &&
-  //     //     coords.y <= t.y + t.height
-  //     // )
-
-  //     const tileFileName = tile ? tile.fileName.replace('.json', '.png') : ''
-
-  //     const tileUrl = tile ? `/maps/runiverse-sketch/${tileFileName}` : ''
-  //     console.log('getTileUrl', {
-  //       coords,
-  //       x: coords.x,
-  //       y: coords.y,
-  //       z: coords.z,
-  //       scaledX,
-  //       scaledY,
-  //       tile,
-  //       tileUrl,
-  //     })
-  //     return tileUrl
-  //   }
 }
 
 const createCustomTileLayer = (

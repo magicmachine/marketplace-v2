@@ -2,6 +2,8 @@ import React from 'react'
 import { MapContainer, TileLayer, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import { CustomTileLayer } from './CustomTile'
+import { gridData, plotData } from 'components/map'
 
 // Custom CRS
 const CustomCRS = L.extend({}, L.CRS.Simple, {
@@ -21,26 +23,25 @@ const CustomCRS = L.extend({}, L.CRS.Simple, {
   infinite: true,
 })
 
-const CustomTileLayer = ({ mapName }) => {
-  const mapHeight = 2048
-  const mapWidth = 2048
+// const CustomTileLayer = ({ mapName }) => {
+//   const mapHeight = 2048
+//   const mapWidth = 2048
 
-  // Convert the points to geographical coordinates
-  const sw = L.latLng(0, mapHeight)
-  const ne = L.latLng(mapWidth, 0)
-  const layerBounds = new L.LatLngBounds(sw, ne)
+//   // Convert the points to geographical coordinates
+//   const sw = L.latLng(0, mapHeight)
+//   const ne = L.latLng(mapWidth, 0)
+//   const layerBounds = new L.LatLngBounds(sw, ne)
 
-  return (
-    <TileLayer
-      url={`http://tournament.realitymod.com/mapviewer/tiles/${mapName}/{z}/{x}/{y}.jpg`}
-      minZoom={0}
-      maxZoom={5}
-      bounds={layerBounds}
-      noWrap={true}
-      attribution='<a href="http://tournament.realitymod.com/showthread.php?t=34254">Project Reality Tournament</a>'
-    />
-  )
-}
+//   return (
+//     <TileLayer
+//       url={`http://tournament.realitymod.com/mapviewer/tiles/${mapName}/{z}/{x}/{y}.jpg`}
+//       minZoom={0}
+//       maxZoom={5}
+//       bounds={layerBounds}
+//       noWrap={true}
+//     />
+//   )
+// }
 
 const CustomMap = () => {
   const mapName = 'beirut' // Example map name
@@ -52,7 +53,7 @@ const CustomMap = () => {
       style={{ height: '100vh', width: '100%' }}
       crs={CustomCRS}
     >
-      <CustomTileLayer mapName={mapName} />
+      <CustomTileLayer mapTiles={gridData.grid.maps} />
     </MapContainer>
   )
 }
