@@ -10,6 +10,7 @@ import {
 import 'leaflet/dist/leaflet.css'
 import L, { LatLngBoundsExpression, LatLngTuple } from 'leaflet'
 import { MapTile, Plot } from './types'
+import { CustomTileLayer } from './GDALTile'
 
 interface PlotMapProps {
   plots: Plot[]
@@ -18,10 +19,30 @@ interface PlotMapProps {
   onPlotClick: (plot: Plot) => void
 }
 
+// // Custom tile layer to handle GDAL generated tiles
+// const CustomTileLayer = L.TileLayer.extend({
+//   getTileUrl: function (coords: any) {
+//     // Inverting the Y coordinate
+//     const y = -coords.y - 1
+//     return L.Util.template(
+//       this._url,
+//       L.extend(
+//         {
+//           s: this._getSubdomain(coords),
+//           x: coords.x,
+//           y: y,
+//           z: coords.z,
+//         },
+//         this.options
+//       )
+//     )
+//   },
+// })
+
 const PlotMap: React.FC<PlotMapProps> = ({ plots, mapTiles, onPlotClick }) => {
   //   const position: LatLngTuple = [10 * 1000, 10 * 1000] // [0, 0] // Center of the map
-  const position: LatLngTuple = [0, 32000] // [y, x] surprise!
-  const zoom = 18 // Initial zoom level
+  const position: LatLngTuple = [0, 0] // [y, x] surprise!
+  const zoom = 1 // Initial zoom level
   const bounds: LatLngBoundsExpression = [
     [0, 0],
     [416 * 1000, 344 * 1000], // this is in gridData pass a prop
@@ -56,14 +77,13 @@ const PlotMap: React.FC<PlotMapProps> = ({ plots, mapTiles, onPlotClick }) => {
       style={{ height: '100vh', width: '100%' }}
       whenReady={() => console.log('Map is ready')}
       crs={L.CRS.Simple} // Using simple Cartesian coordinate system
-      maxBounds={bounds} // Restricting panning to within the map bounds
+      // maxBounds={bounds} // Restricting panning to within the map bounds
     >
-      <CustomTileLayer mapTiles={mapTiles} />
-      {plotPolygons}
-      {/* <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      /> */}
+      {/* <CustomTileLayer mapTiles={mapTiles} /> */}
+
+      {/* {plotPolygons} */}
+      {/* <TileLayer url="/maps/mapchunks/{z}/{x}/{y}.png" /> */}
+      <CustomTileLayer url="/maps/mapchunks/{z}/{x}/{y}.png" />
     </MapContainer>
   )
 }
