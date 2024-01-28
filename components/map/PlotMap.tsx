@@ -1,5 +1,11 @@
 import React from 'react'
-import { MapContainer, TileLayer, Polygon, useMap } from 'react-leaflet'
+import {
+  MapContainer,
+  TileLayer,
+  Polygon,
+  useMap,
+  Rectangle,
+} from 'react-leaflet'
 import {
   createTileLayerComponent,
   createElementObject,
@@ -17,6 +23,7 @@ import MapInfo, {
   createMapInfoControl,
   useMapInfoControl,
 } from './MapInfo'
+import { pixelCoordsToLatLon } from './tileUtils'
 
 interface PlotMapProps {
   plots: Plot[]
@@ -25,38 +32,58 @@ interface PlotMapProps {
   onPlotClick: (plot: Plot) => void
 }
 
-const PlotMap: React.FC<PlotMapProps> = ({ plots, mapTiles, onPlotClick }) => {
+const PlotMap: React.FC<PlotMapProps> = ({ plots, mapTiles }) => {
   //   const position: LatLngTuple = [10 * 1000, 10 * 1000] // [0, 0] // Center of the map
-  const position: LatLngTuple = [0, 0] // [y, x] surprise!
-  const zoom = 1 // Initial zoom level
+  // const position: LatLngTuple = [0, 0] // [y, x] surprise!
+  // const zoom = 1 // Initial zoom level
+
+  // const position: LatLngTuple = [-200.4636, 95.6536] // [y, x] surprise!
+  // const zoom = 11 // Initial zoom level
+
+  const position: LatLngTuple = [-159.625, 123.25]
+  const zoom = 2 // Initial zoom level
+
   const bounds: LatLngBoundsExpression = [
     [0, 0],
     [416 * 1000, 344 * 1000], // this is in gridData pass a prop
   ] // Map bounds based on maxX and maxY
 
-  //   const mapRef = useMap()
-  const plotPolygons = plots.map((plot) => {
-    const positions = [
-      [plot.position.top, plot.position.left],
-      [plot.position.top, plot.position.right],
-      [plot.position.bottom, plot.position.right],
-      [plot.position.bottom, plot.position.left],
-    ]
+  const onPlotClick = (plot: Plot, positions: any, i: number) => {
+    console.log('clicked', plot, positions, i)
+  }
+
+  // Converts pixel position to LatLng
+  const pixelToLatLng = (x, y) => {
+    return [y, x]
+  }
+  const purpleOptions = { color: 'purple' }
+
+  // let plts = plots.filter((plot) => plot.local_id === 7471)
+  let plts = plots
+
+  const plotPolygons = plts.map((plot, i) => {
+    const positions = pixelCoordsToLatLon(plot, 12)
 
     return (
       <Polygon
         key={plot.local_id}
+        pathOptions={purpleOptions}
         positions={positions as any}
         eventHandlers={{
-          click: () => onPlotClick(plot),
+          click: () => onPlotClick(plot, positions, i),
         }}
       />
     )
   })
 
-  console.log('foo bar', { position, zoom })
+  console.log('foo bar', { position, zoom, plots })
 
   // const MapInfoControl = createControlComponent(createMapInfoControl)
+
+  const rectangle: any = [
+    [position[0], position[1]],
+    [position[0] + 0.1, position[1] + 0.1],
+  ]
 
   return (
     <MapContainer
@@ -67,7 +94,9 @@ const PlotMap: React.FC<PlotMapProps> = ({ plots, mapTiles, onPlotClick }) => {
       crs={L.CRS.Simple} // Using simple Cartesian coordinate system
       // maxBounds={bounds} // Restricting panning to within the map bounds
     >
-      {/* {plotPolygons} */}
+      {plotPolygons}
+      <Rectangle bounds={rectangle} pathOptions={purpleOptions} />
+
       <CustomTileLayer url="/maps/mapchunks/{z}/{x}/{y}.png" />
       <MapInfoComponent />
       {/* <MapInfoControl /> */}

@@ -31,4 +31,6 @@ function processGridData(gridData: GridData) {
 
 export const gridData = processGridData(FullMap as GridData)
 
-export const plotData = plots as Plot[]
+export const plotData = (plots as Plot[]).sort(
+  (a, b) => a.local_id - b.local_id
+)

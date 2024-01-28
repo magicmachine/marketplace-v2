@@ -5,15 +5,11 @@ const tileSize = 256
 const initialResolution = (2 * Math.PI * 6378137) / tileSize
 const originShift = (2 * Math.PI * 6378137) / 2.0
 
-// Adjust these based on the observed offset in meters
-const offsetX = originShift * 1 // Example adjustment
-const offsetY = originShift * 0 // Example adjustment
-
 // Convert pixels to meters at a given zoom level
 export function pixelsToMeters(px, py, zoom) {
   const resolution = initialResolution / 2 ** zoom
-  const mx = px * resolution - originShift + offsetX
-  const my = py * resolution - originShift + offsetY
+  const mx = px * resolution // Removed originShift because we're not using it for offset
+  const my = py * resolution // Removed originShift because we're not using it for offset
   return [mx, my]
 }
 
@@ -27,8 +23,11 @@ export function metersToLatLon(mx, my) {
   return [lat, lon]
 }
 
-// Convert pixel coordinates of a plot to lat/lon
+// guild hall
+// -196.2512 118.3982
+
 // export function pixelCoordsToLatLon(plot, zoom) {
+//   // Assuming these are correctly implemented elsewhere
 //   const [leftMx, topMy] = pixelsToMeters(
 //     plot.position.left,
 //     plot.position.top,
@@ -40,8 +39,17 @@ export function metersToLatLon(mx, my) {
 //     zoom
 //   )
 
-//   const topLeftLatLon = metersToLatLon(leftMx, topMy)
-//   const bottomRightLatLon = metersToLatLon(rightMx, bottomMy)
+//   // Assuming the midpoint of the y extent for EPSG:3857, which is roughly 0 at the equator for this projection
+//   // This is a simplification and might need adjustment based on your specific map setup
+//   const midPointY = 0
+
+//   // Manually invert the y-coordinate by subtracting from the midpoint
+//   const invertedTopY = midPointY - (topMy - midPointY)
+//   const invertedBottomY = midPointY - (bottomMy - midPointY)
+
+//   // Convert the manually inverted y-coordinates back to lat/lon
+//   const topLeftLatLon = metersToLatLon(leftMx, invertedTopY)
+//   const bottomRightLatLon = metersToLatLon(rightMx, invertedBottomY)
 
 //   return [
 //     topLeftLatLon,
@@ -51,63 +59,145 @@ export function metersToLatLon(mx, my) {
 //   ]
 // }
 
-// export function pixelCoordsToLatLon(plot, zoom) {
-//   // Swap the top and bottom y-coordinates to "flip" vertically
-//   const [leftMx, bottomMy] = pixelsToMeters(
-//     plot.position.left,
-//     plot.position.bottom, // Use bottom here
+export interface PlotPosition {
+  left: number
+  top: number
+  right: number
+  bottom: number
+}
+
+// Convert plot pixel coordinates to lat-lng using GlobalMercator logic
+// export function pixelCoordsToLatLon(
+//   plotPosition: PlotPosition,
+//   zoom: number
+// ): [number, number][] {
+//   const globalMercator = new GlobalMercator()
+//   // Convert each corner of the plot from pixel coordinates to meters
+//   const metersBL = globalMercator.PixelsToMeters(
+//     plotPosition.left,
+//     plotPosition.bottom,
 //     zoom
 //   )
-//   const [rightMx, topMy] = pixelsToMeters(
-//     plot.position.right,
-//     plot.position.top, // Use top here
+//   const metersTR = globalMercator.PixelsToMeters(
+//     plotPosition.right,
+//     plotPosition.top,
 //     zoom
 //   )
 
-//   const topLeftLatLon = metersToLatLon(leftMx, topMy) // Now represents the top left
-//   const bottomRightLatLon = metersToLatLon(rightMx, bottomMy) // Now represents the bottom right
+//   // Convert from meters to lat-lng coordinates
+//   const latLngBL = globalMercator.MetersToLatLon(metersBL[0], metersBL[1])
+//   const latLngTR = globalMercator.MetersToLatLon(metersTR[0], metersTR[1])
 
-//   // The order of coordinates here assumes a clockwise definition starting from the top-left
-//   return [
-//     topLeftLatLon, // Now actually top left due to the flip
-//     [bottomRightLatLon[0], topLeftLatLon[1]], // Top right
-//     bottomRightLatLon, // Now actually bottom right due to the flip
-//     [topLeftLatLon[0], bottomRightLatLon[1]], // Bottom left
-//   ]
+//   // Assuming a rectangular plot, generate the other two corners based on the bottom-left and top-right
+//   const latLngBR = globalMercator.MetersToLatLon(metersTR[0], metersBL[1])
+//   const latLngTL = globalMercator.MetersToLatLon(metersBL[0], metersTR[1])
+
+//   // Return an array of lat-lng pairs for each corner of the rectangle
+//   return [latLngBL, latLngBR, latLngTR, latLngTL]
 // }
 
-// guild hall
-// -196.2512 118.3982
+// class GlobalMercator {
+//   tileSize: number
+//   initialResolution: number
+//   originShift: number
 
+//   constructor(tileSize: number = 256) {
+//     this.tileSize = tileSize
+//     this.initialResolution = (2 * Math.PI * 6378137) / this.tileSize
+//     this.originShift = (2 * Math.PI * 6378137) / 2.0
+//   }
+
+//   LatLonToMeters(lat: number, lon: number): [number, number] {
+//     let mx = (lon * this.originShift) / 180.0
+//     let my =
+//       Math.log(Math.tan(((90 + lat) * Math.PI) / 360.0)) / (Math.PI / 180.0)
+//     my = (my * this.originShift) / 180.0
+//     return [mx, my]
+//   }
+
+//   MetersToLatLon(mx: number, my: number): [number, number] {
+//     let lon = (mx / this.originShift) * 180.0
+//     let lat = (my / this.originShift) * 180.0
+//     lat =
+//       (180 / Math.PI) *
+//       (2 * Math.atan(Math.exp((lat * Math.PI) / 180.0)) - Math.PI / 2.0)
+//     return [lat, lon]
+//   }
+
+//   PixelsToMeters(px: number, py: number, zoom: number): [number, number] {
+//     const res = this.Resolution(zoom)
+//     const mx = px * res - this.originShift
+//     const my = py * res - this.originShift
+//     return [mx, my]
+//   }
+
+//   MetersToPixels(mx: number, my: number, zoom: number): [number, number] {
+//     const res = this.Resolution(zoom)
+//     const px = (mx + this.originShift) / res
+//     const py = (my + this.originShift) / res
+//     return [px, py]
+//   }
+
+//   Resolution(zoom: number): number {
+//     return this.initialResolution / 2 ** zoom
+//   }
+
+//   PixelsToTile(px: number, py: number): [number, number] {
+//     const tx = Math.ceil(px / this.tileSize) - 1
+//     const ty = Math.ceil(py / this.tileSize) - 1
+//     return [tx, ty]
+//   }
+
+//   TileBounds(
+//     tx: number,
+//     ty: number,
+//     zoom: number
+//   ): [number, number, number, number] {
+//     const minPoint = this.PixelsToMeters(
+//       tx * this.tileSize,
+//       ty * this.tileSize,
+//       zoom
+//     )
+//     const maxPoint = this.PixelsToMeters(
+//       (tx + 1) * this.tileSize,
+//       (ty + 1) * this.tileSize,
+//       zoom
+//     )
+//     return [minPoint[0], minPoint[1], maxPoint[0], maxPoint[1]]
+//   }
+
+//   TileLatLonBounds(
+//     tx: number,
+//     ty: number,
+//     zoom: number
+//   ): [number, number, number, number] {
+//     const bounds = this.TileBounds(tx, ty, zoom)
+//     const minLatLon = this.MetersToLatLon(bounds[0], bounds[1])
+//     const maxLatLon = this.MetersToLatLon(bounds[2], bounds[3])
+//     return [minLatLon[0], minLatLon[1], maxLatLon[0], maxLatLon[1]]
+//   }
+// }
+
+// Convert plot pixel positions to Leaflet coordinates directly
 export function pixelCoordsToLatLon(plot, zoom) {
-  // Assuming these are correctly implemented elsewhere
-  const [leftMx, topMy] = pixelsToMeters(
-    plot.position.left,
-    plot.position.top,
-    zoom
-  )
-  const [rightMx, bottomMy] = pixelsToMeters(
-    plot.position.right,
-    plot.position.bottom,
-    zoom
-  )
+  const imageWidth = 416000 // Full map width in pixels at zoom level 12
+  const imageHeight = 344000 // Full map height in pixels at zoom level 12
 
-  // Assuming the midpoint of the y extent for EPSG:3857, which is roughly 0 at the equator for this projection
-  // This is a simplification and might need adjustment based on your specific map setup
-  const midPointY = 0
+  // Directly map plot pixel positions to Leaflet coordinates
+  const topLeft = [
+    plot.position.top / imageHeight,
+    plot.position.left / imageWidth,
+  ]
+  const bottomRight = [
+    plot.position.bottom / imageHeight,
+    plot.position.right / imageWidth,
+  ]
 
-  // Manually invert the y-coordinate by subtracting from the midpoint
-  const invertedTopY = midPointY - (topMy - midPointY)
-  const invertedBottomY = midPointY - (bottomMy - midPointY)
-
-  // Convert the manually inverted y-coordinates back to lat/lon
-  const topLeftLatLon = metersToLatLon(leftMx, invertedTopY)
-  const bottomRightLatLon = metersToLatLon(rightMx, invertedBottomY)
-
+  // Return coordinates for Leaflet Polygon
   return [
-    topLeftLatLon,
-    [topLeftLatLon[0], bottomRightLatLon[1]],
-    bottomRightLatLon,
-    [bottomRightLatLon[0], topLeftLatLon[1]],
+    topLeft, // Top Left
+    [topLeft[0], bottomRight[1]], // Top Right
+    bottomRight, // Bottom Right
+    [bottomRight[0], topLeft[1]], // Bottom Left
   ]
 }
