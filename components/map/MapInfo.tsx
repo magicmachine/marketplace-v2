@@ -39,15 +39,6 @@ export const useMapInfoControl = () => {
     // Initial update for map center
     updateMapCenterInfo()
 
-    // const updateInfo = () => {
-    //   const zoom = map.getZoom()
-    //   const center = map.getCenter()
-    //   controlContainer.innerHTML = `Zoom: ${zoom} <br>Lat: ${center.lat.toFixed(
-    //     4
-    //   )}, Lng: ${center.lng.toFixed(4)}`
-    // }
-    // updateInfo() // Initial update
-
     // Event listeners for map and cursor updates
     map.on('moveend', updateMapCenterInfo)
     map.on('zoomend', updateMapCenterInfo)

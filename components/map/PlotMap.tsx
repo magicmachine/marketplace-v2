@@ -24,6 +24,7 @@ import MapInfo, {
   useMapInfoControl,
 } from './MapInfo'
 import { pixelCoordsToLatLon } from './tileUtils'
+import { useMapInfoControlScale } from './useMapInfoControl'
 
 interface PlotMapProps {
   plots: Plot[]
@@ -31,6 +32,8 @@ interface PlotMapProps {
 
   onPlotClick: (plot: Plot) => void
 }
+
+const purpleOptions = { color: 'purple' }
 
 const PlotMap: React.FC<PlotMapProps> = ({ plots, mapTiles }) => {
   //   const position: LatLngTuple = [10 * 1000, 10 * 1000] // [0, 0] // Center of the map
@@ -48,33 +51,10 @@ const PlotMap: React.FC<PlotMapProps> = ({ plots, mapTiles }) => {
     [416 * 1000, 344 * 1000], // this is in gridData pass a prop
   ] // Map bounds based on maxX and maxY
 
-  const onPlotClick = (plot: Plot, positions: any, i: number) => {
-    console.log('clicked', plot, positions, i)
-  }
-
   // Converts pixel position to LatLng
   const pixelToLatLng = (x, y) => {
     return [y, x]
   }
-  const purpleOptions = { color: 'purple' }
-
-  // let plts = plots.filter((plot) => plot.local_id === 7471)
-  let plts = plots
-
-  const plotPolygons = plts.map((plot, i) => {
-    const positions = pixelCoordsToLatLon(plot, 12)
-
-    return (
-      <Polygon
-        key={plot.local_id}
-        pathOptions={purpleOptions}
-        positions={positions as any}
-        eventHandlers={{
-          click: () => onPlotClick(plot, positions, i),
-        }}
-      />
-    )
-  })
 
   console.log('foo bar', { position, zoom, plots })
 
@@ -94,7 +74,8 @@ const PlotMap: React.FC<PlotMapProps> = ({ plots, mapTiles }) => {
       crs={L.CRS.Simple} // Using simple Cartesian coordinate system
       // maxBounds={bounds} // Restricting panning to within the map bounds
     >
-      {plotPolygons}
+      {/* {plotPolygons} */}
+      <Plots plots={plots} />
       <Rectangle bounds={rectangle} pathOptions={purpleOptions} />
 
       <CustomTileLayer url="/maps/mapchunks/{z}/{x}/{y}.png" />
@@ -106,3 +87,34 @@ const PlotMap: React.FC<PlotMapProps> = ({ plots, mapTiles }) => {
 }
 
 export default PlotMap
+
+const Plots = ({ plots }) => {
+  // let plts = plots.filter((plot) => plot.local_id === 7471)
+  let plts = plots
+  const onPlotClick = (plot: Plot, positions: any, i: number) => {
+    console.log('clicked', plot, positions, i)
+  }
+
+  // const { scale, yOffset, xOffset } = useMapInfoControlScale()
+  console.log('plots')
+  const scale = 199
+  const yOffset = 115500
+  const xOffset = 3400
+
+  const plotPolygons = plts.map((plot, i) => {
+    const positions = pixelCoordsToLatLon(plot, scale, yOffset, xOffset)
+
+    return (
+      <Polygon
+        key={plot.local_id}
+        pathOptions={purpleOptions}
+        positions={positions as any}
+        eventHandlers={{
+          click: () => onPlotClick(plot, positions, i),
+        }}
+      />
+    )
+  })
+
+  return <>{plotPolygons}</>
+}

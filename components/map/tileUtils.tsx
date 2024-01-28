@@ -179,13 +179,18 @@ export interface PlotPosition {
 // }
 
 // Convert plot pixel positions to Leaflet coordinates directly
-export function pixelCoordsToLatLon(plot, zoom) {
-  const scale = 1 / 200
+export function pixelCoordsToLatLon(
+  plot,
+  scaleInput = 1 / 200,
+  yOffset = 0,
+  xOffset = 0
+) {
+  const scale = 1 / scaleInput
   const imageWidth = 416000 * scale // Full map width in pixels at zoom level 12
   const imageHeight = 344000 * scale // Full map height in pixels at zoom level 12
 
-  const yOffset = 100000
-  const xOffset = 0
+  //   const yOffset = 103450
+  //   const xOffset = 0
 
   // Apply offsets and then normalize pixel positions to [0, 1] range and invert Y-axis
   const topLeft = [
