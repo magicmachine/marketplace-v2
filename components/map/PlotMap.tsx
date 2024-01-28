@@ -5,12 +5,18 @@ import {
   createElementObject,
   updateGridLayer,
   useLeafletContext,
+  createControlComponent,
 } from '@react-leaflet/core'
 
 import 'leaflet/dist/leaflet.css'
 import L, { LatLngBoundsExpression, LatLngTuple } from 'leaflet'
 import { MapTile, Plot } from './types'
 import { CustomTileLayer } from './GDALTile'
+import MapInfo, {
+  MapInfoComponent,
+  createMapInfoControl,
+  useMapInfoControl,
+} from './MapInfo'
 
 interface PlotMapProps {
   plots: Plot[]
@@ -18,26 +24,6 @@ interface PlotMapProps {
 
   onPlotClick: (plot: Plot) => void
 }
-
-// // Custom tile layer to handle GDAL generated tiles
-// const CustomTileLayer = L.TileLayer.extend({
-//   getTileUrl: function (coords: any) {
-//     // Inverting the Y coordinate
-//     const y = -coords.y - 1
-//     return L.Util.template(
-//       this._url,
-//       L.extend(
-//         {
-//           s: this._getSubdomain(coords),
-//           x: coords.x,
-//           y: y,
-//           z: coords.z,
-//         },
-//         this.options
-//       )
-//     )
-//   },
-// })
 
 const PlotMap: React.FC<PlotMapProps> = ({ plots, mapTiles, onPlotClick }) => {
   //   const position: LatLngTuple = [10 * 1000, 10 * 1000] // [0, 0] // Center of the map
@@ -70,6 +56,8 @@ const PlotMap: React.FC<PlotMapProps> = ({ plots, mapTiles, onPlotClick }) => {
 
   console.log('foo bar', { position, zoom })
 
+  // const MapInfoControl = createControlComponent(createMapInfoControl)
+
   return (
     <MapContainer
       center={position}
@@ -79,11 +67,11 @@ const PlotMap: React.FC<PlotMapProps> = ({ plots, mapTiles, onPlotClick }) => {
       crs={L.CRS.Simple} // Using simple Cartesian coordinate system
       // maxBounds={bounds} // Restricting panning to within the map bounds
     >
-      {/* <CustomTileLayer mapTiles={mapTiles} /> */}
-
       {/* {plotPolygons} */}
-      {/* <TileLayer url="/maps/mapchunks/{z}/{x}/{y}.png" /> */}
       <CustomTileLayer url="/maps/mapchunks/{z}/{x}/{y}.png" />
+      <MapInfoComponent />
+      {/* <MapInfoControl /> */}
+      {/* <MapInfo /> */}
     </MapContainer>
   )
 }

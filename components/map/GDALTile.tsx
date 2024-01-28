@@ -1,21 +1,31 @@
 import React from 'react'
-import L from 'leaflet'
-import { createTileLayerComponent, updateGridLayer } from '@react-leaflet/core'
+import L, { TileLayerOptions, Coords, GridLayer, Layer } from 'leaflet'
+import {
+  createTileLayerComponent,
+  updateGridLayer,
+  LeafletContext,
+  LayerProps,
+} from '@react-leaflet/core'
 import 'leaflet/dist/leaflet.css'
 
+interface CustomTileLayerProps extends LayerProps {
+  url: string
+  options?: TileLayerOptions
+}
+
 class CustomTileLayerClass extends L.TileLayer {
-  constructor(url, options = {}) {
+  constructor(url: string, options: TileLayerOptions = {}) {
     super(url, options)
   }
 
-  getTileUrl(coords) {
+  getTileUrl(coords: Coords) {
     // Here we adjust the URL generation to account for Y-axis inversion.
     const y = this.options.tms ? coords.y : Math.pow(2, coords.z) - coords.y - 1
     return L.Util.template(
-      this._url,
+      (this as any)._url,
       L.extend(
         {
-          s: this._getSubdomain(coords),
+          s: (this as any)._getSubdomain(coords),
           x: coords.x,
           y: y,
           z: coords.z,
@@ -27,14 +37,18 @@ class CustomTileLayerClass extends L.TileLayer {
 }
 
 // The create function for integrating with React-Leaflet's custom component system.
-const createCustomTileLayer = (props, context) => {
+const createCustomTileLayer = (props: CustomTileLayerProps, context: any) => {
   const { url, options } = props
   const instance = new CustomTileLayerClass(url, options)
   return { instance, context }
 }
 
 // The update function for handling prop changes.
-const updateCustomTileLayer = (instance, props, prevProps) => {
+const updateCustomTileLayer = (
+  instance: GridLayer,
+  props: CustomTileLayerProps,
+  prevProps: CustomTileLayerProps
+) => {
   // Here, you would handle any dynamic updates to your custom tile layer.
   // For example, updating options that might change after initial render.
   // This is where you could extend functionality if needed.
