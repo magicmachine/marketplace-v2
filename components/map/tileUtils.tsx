@@ -180,24 +180,28 @@ export interface PlotPosition {
 
 // Convert plot pixel positions to Leaflet coordinates directly
 export function pixelCoordsToLatLon(plot, zoom) {
-  const imageWidth = 416000 // Full map width in pixels at zoom level 12
-  const imageHeight = 344000 // Full map height in pixels at zoom level 12
+  const scale = 1 / 200
+  const imageWidth = 416000 * scale // Full map width in pixels at zoom level 12
+  const imageHeight = 344000 * scale // Full map height in pixels at zoom level 12
 
-  // Directly map plot pixel positions to Leaflet coordinates
+  const yOffset = 100000
+  const xOffset = 0
+
+  // Apply offsets and then normalize pixel positions to [0, 1] range and invert Y-axis
   const topLeft = [
-    plot.position.top / imageHeight,
-    plot.position.left / imageWidth,
+    1 - (plot.position.top + yOffset) / imageHeight,
+    (plot.position.left + xOffset) / imageWidth,
   ]
   const bottomRight = [
-    plot.position.bottom / imageHeight,
-    plot.position.right / imageWidth,
+    1 - (plot.position.bottom + yOffset) / imageHeight,
+    (plot.position.right + xOffset) / imageWidth,
   ]
 
-  // Return coordinates for Leaflet Polygon
+  // Return coordinates for Leaflet Polygon, ensuring the Y-axis inversion is applied
   return [
-    topLeft, // Top Left
-    [topLeft[0], bottomRight[1]], // Top Right
-    bottomRight, // Bottom Right
-    [bottomRight[0], topLeft[1]], // Bottom Left
+    [bottomRight[0], topLeft[1]], // Now Bottom Left
+    [bottomRight[0], bottomRight[1]], // Now Bottom Right
+    [topLeft[0], bottomRight[1]], // Now Top Right
+    [topLeft[0], topLeft[1]], // Now Top Left
   ]
 }
