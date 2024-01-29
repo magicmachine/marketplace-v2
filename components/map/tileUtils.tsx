@@ -1,5 +1,7 @@
 // https://github.com/tehamalab/gdal2tiles/blob/master/gdal2tiles/gdal2tiles.py
 
+import L, { LatLngBoundsExpression, LatLngTuple } from 'leaflet'
+
 // Constants for the Global Mercator (Spherical Mercator)
 const tileSize = 256
 const initialResolution = (2 * Math.PI * 6378137) / tileSize
@@ -179,34 +181,74 @@ export interface PlotPosition {
 // }
 
 // Convert plot pixel positions to Leaflet coordinates directly
-export function pixelCoordsToLatLon(
-  plot,
-  scaleInput = 1 / 200,
-  yOffset = 0,
-  xOffset = 0
-) {
-  const scale = 1 / scaleInput
-  const imageWidth = 416000 * scale // Full map width in pixels at zoom level 12
-  const imageHeight = 344000 * scale // Full map height in pixels at zoom level 12
+// export function pixelCoordsToLatLon(
+//   plot,
+//   scaleInput = 1 / 200,
+//   yOffset = 0,
+//   xOffset = 0
+// ) {
+//   const scale = 1 / scaleInput
+//   const imageWidth = 416000 * scale // Full map width in pixels at zoom level 12
+//   const imageHeight = 344000 * scale // Full map height in pixels at zoom level 12
 
-  //   const yOffset = 103450
-  //   const xOffset = 0
+//   //   const yOffset = 103450
+//   //   const xOffset = 0
 
-  // Apply offsets and then normalize pixel positions to [0, 1] range and invert Y-axis
-  const topLeft = [
-    1 - (plot.position.top + yOffset) / imageHeight,
-    (plot.position.left + xOffset) / imageWidth,
-  ]
-  const bottomRight = [
-    1 - (plot.position.bottom + yOffset) / imageHeight,
-    (plot.position.right + xOffset) / imageWidth,
-  ]
+//   // Apply offsets and then normalize pixel positions to [0, 1] range and invert Y-axis
+//   const topLeft = [
+//     1 - (plot.position.top + yOffset) / imageHeight,
+//     (plot.position.left + xOffset) / imageWidth,
+//   ]
+//   const bottomRight = [
+//     1 - (plot.position.bottom + yOffset) / imageHeight,
+//     (plot.position.right + xOffset) / imageWidth,
+//   ]
 
-  // Return coordinates for Leaflet Polygon, ensuring the Y-axis inversion is applied
+//   // Return coordinates for Leaflet Polygon, ensuring the Y-axis inversion is applied
+//   return [
+//     [bottomRight[0], topLeft[1]], // Now Bottom Left
+//     [bottomRight[0], bottomRight[1]], // Now Bottom Right
+//     [topLeft[0], bottomRight[1]], // Now Top Right
+//     [topLeft[0], topLeft[1]], // Now Top Left
+//   ]
+// }
+
+// export function findZoomLevel(pixelWidth: number, pixelHeight: number): number {
+//   const maxDimension = Math.max(pixelWidth, pixelHeight)
+//   const zoomLevel = Math.ceil(Math.log(maxDimension / 256) / Math.log(2))
+//   return zoomLevel
+// }
+
+// const pixelWidth = 416000
+// const pixelHeight = 344000
+// const zoomLevel = findZoomLevel(pixelWidth, pixelHeight)
+
+// Conversion function for pixel coordinates to Leaflet's coordinate system
+export const convertPixelCoordsToLatLng = (position, maxZoom) => {
+  // In L.CRS.Simple, Leaflet's coordinate system matches the pixel coordinates
+  // No conversion is necessary, just mapping the positions correctly
+  const topLeft = L.point(position.left, position.top)
+  const bottomRight = L.point(position.right, position.bottom)
+
+  // Convert points to LatLng
+  const latLngTopLeft = L.CRS.Simple.pointToLatLng(topLeft, maxZoom)
+  const latLngBottomRight = L.CRS.Simple.pointToLatLng(bottomRight, maxZoom)
+
+  const offset = -88.0315
+
+  // Return the corners as an array of LatLng objects
   return [
-    [bottomRight[0], topLeft[1]], // Now Bottom Left
-    [bottomRight[0], bottomRight[1]], // Now Bottom Right
-    [topLeft[0], bottomRight[1]], // Now Top Right
-    [topLeft[0], topLeft[1]], // Now Top Left
+    [latLngTopLeft.lat + offset, latLngTopLeft.lng],
+    [latLngTopLeft.lat + offset, latLngBottomRight.lng],
+    [latLngBottomRight.lat + offset, latLngBottomRight.lng],
+    [latLngBottomRight.lat + offset, latLngTopLeft.lng],
   ]
 }
+
+// Assuming a maxZoom that matches the resolution of your tiles
+// something like this should be able to calculate the offset above, but it's not quite right
+// export const calculateOffset = (mapHeightPixels, maxZoom) => {
+//   const bottomPixelPoint = L.point(0, mapHeightPixels) // x is irrelevant
+//   const bottomLatLng = L.CRS.Simple.pointToLatLng(bottomPixelPoint, maxZoom)
+//   return -bottomLatLng.lat // The offset might need to be adjusted based on your map's layout
+// }

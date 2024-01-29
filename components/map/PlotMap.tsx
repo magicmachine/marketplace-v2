@@ -23,7 +23,11 @@ import MapInfo, {
   createMapInfoControl,
   useMapInfoControl,
 } from './MapInfo'
-import { pixelCoordsToLatLon } from './tileUtils'
+import {
+  calculateOffset,
+  convertPixelCoordsToLatLng,
+  pixelCoordsToLatLon,
+} from './tileUtils'
 import { useMapInfoControlScale } from './useMapInfoControl'
 
 interface PlotMapProps {
@@ -78,6 +82,22 @@ const PlotMap: React.FC<PlotMapProps> = ({ plots, mapTiles }) => {
       <Plots plots={plots} />
       <Rectangle bounds={rectangle} pathOptions={purpleOptions} />
 
+      <Rectangle
+        bounds={[
+          [0, 0],
+          [10, 10],
+        ]}
+        pathOptions={{ color: 'green' }}
+      />
+
+      <Rectangle
+        bounds={[
+          [-256, 256],
+          [-256 - 10, 256 + 10],
+        ]}
+        pathOptions={{ color: 'green' }}
+      />
+
       <CustomTileLayer url="/maps/mapchunks/{z}/{x}/{y}.png" />
       <MapInfoComponent />
       {/* <MapInfoControl /> */}
@@ -95,6 +115,8 @@ const Plots = ({ plots }) => {
     console.log('clicked', plot, positions, i)
   }
 
+  console.log('offset', calculateOffset(344000.0, 11))
+
   // const { scale, yOffset, xOffset } = useMapInfoControlScale()
   console.log('plots')
   const scale = 199
@@ -102,7 +124,9 @@ const Plots = ({ plots }) => {
   const xOffset = 3400
 
   const plotPolygons = plts.map((plot, i) => {
-    const positions = pixelCoordsToLatLon(plot, scale, yOffset, xOffset)
+    // console.log({ plot })
+    // const positions = pixelCoordsToLatLon(plot, scale, yOffset, xOffset)
+    const positions = convertPixelCoordsToLatLng(plot.position, 11)
 
     return (
       <Polygon

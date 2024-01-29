@@ -72,9 +72,10 @@ for chunk in chunks:
         "-r",
         "near",
         "-z",
-        "0-5",
+        "0-5",  # "0-12" is what u want
         img_path,
     ]
+    # TODO - maybe if you use -xyz=False then you get the y-coordinates increasing downwards, which would be easier ? maybe not
 
     print(gdal2tiles_command)
 
