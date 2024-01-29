@@ -115,8 +115,6 @@ const Plots = ({ plots }) => {
     console.log('clicked', plot, positions, i)
   }
 
-  console.log('offset', calculateOffset(344000.0, 11))
-
   // const { scale, yOffset, xOffset } = useMapInfoControlScale()
   console.log('plots')
   const scale = 199
