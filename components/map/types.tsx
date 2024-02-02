@@ -1,4 +1,4 @@
-interface PlotPosition {
+export interface PlotPosition {
   left: number
   top: number
   right: number
@@ -55,11 +55,3 @@ Example plot data that defines the polygons within our map.
 },
 
 */
-
-export interface Plot {
-  local_id: number
-  buildable_area: number
-  position: PlotPosition
-  biome: string
-  region_display_tag: string
-}

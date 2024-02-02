@@ -29,6 +29,7 @@ type TokenCardProps = {
     e: SyntheticEvent<HTMLAudioElement | HTMLVideoElement, Event>
   ) => void
   tokenCount?: string
+  aspectRatio?: string
 }
 
 export default ({
@@ -41,6 +42,7 @@ export default ({
   onMediaPlayed,
   tokenCount,
   showSource = true,
+  aspectRatio = '1/1',
 }: TokenCardProps) => {
   const { addToast } = useContext(ToastContext)
   const mediaType = extractMediaType(token?.token)
@@ -166,7 +168,7 @@ export default ({
               maxHeight: 720,
               height: '100%',
               borderRadius: 0,
-              aspectRatio: '1/1',
+              aspectRatio,
             }}
             staticOnly={!showMedia}
             imageResolution={'medium'}
