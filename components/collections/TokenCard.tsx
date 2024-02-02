@@ -20,7 +20,7 @@ import { Address } from 'wagmi'
 type TokenCardProps = {
   token: ReturnType<typeof useDynamicTokens>['data'][0]
   address?: Address
-  rarityEnabled: boolean
+  rarityEnabled?: boolean
   addToCartEnabled?: boolean
   showSource?: boolean
   showAsk?: boolean

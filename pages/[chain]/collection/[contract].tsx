@@ -62,6 +62,8 @@ import { CollectionDetails } from 'components/collections/CollectionDetails'
 import useTokenUpdateStream from 'hooks/useTokenUpdateStream'
 import LiveState from 'components/common/LiveState'
 import { formatUnits } from 'viem'
+import CollectionDetailsHeader from 'components/collection/CollectionDetailsHeader'
+import CollectionPageHeader from '../../../components/collection/CollectionPageHeader'
 
 type ActivityTypes = Exclude<
   NonNullable<
@@ -143,6 +145,8 @@ const CollectionPage: NextPage<Props> = ({ id, ssr }) => {
         ? 'Free'
         : `${mintPriceDecimal} ${mintCurrency}`
       : undefined
+
+  // let { tokenQuery } = useTokenSorting()
 
   let tokenQuery: Parameters<typeof useDynamicTokens>['0'] = {
     limit: 20,
@@ -386,229 +390,13 @@ const CollectionPage: NextPage<Props> = ({ id, ssr }) => {
               },
             }}
           >
-            <Flex
-              justify="between"
-              wrap="wrap"
-              css={{ mb: '$4', gap: '$4' }}
-              align="start"
-            >
-              <Flex
-                direction="column"
-                css={{
-                  gap: '$4',
-                  minWidth: 0,
-                  //flex: 1,
-                  width: '100%',
-                  '@lg': { width: 'unset' },
-                }}
-              >
-                <Flex css={{ gap: '$4', flex: 1 }} align="center">
-                  <Img
-                    src={optimizeImage(collection.image!, 72 * 2)}
-                    width={72}
-                    height={72}
-                    css={{
-                      width: 72,
-                      height: 72,
-                      borderRadius: 8,
-                      objectFit: 'cover',
-                      border: '1px solid $gray5',
-                    }}
-                    alt="Collection Page Image"
-                  />
-                  <Box css={{ minWidth: 0 }}>
-                    <Flex align="center" css={{ gap: '$1', mb: 0 }}>
-                      <Text style="h4" as="h6" ellipsify>
-                        {collection.name}
-                      </Text>
-                      <OpenSeaVerified
-                        openseaVerificationStatus={
-                          collection?.openseaVerificationStatus
-                        }
-                      />
-                    </Flex>
-                    <Flex
-                      css={{
-                        gap: '$3',
-                        ...(isSmallDevice && {
-                          display: 'grid',
-                          gridTemplateColumns: '1fr 1fr',
-                        }),
-                      }}
-                      align="center"
-                    >
-                      <CopyText
-                        text={collection.id as string}
-                        css={{
-                          width: 'max-content',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '$1',
-                        }}
-                      >
-                        <Box css={{ color: '$gray9' }}>
-                          <FontAwesomeIcon icon={faCube} size="xs" />
-                        </Box>
-                        <Text as="p" style="body3">
-                          {truncateAddress(collection?.primaryContract || '')}
-                        </Text>
-                      </CopyText>
-                      <Flex
-                        align="center"
-                        css={{
-                          gap: '$1',
-                        }}
-                      >
-                        <Flex
-                          css={{
-                            color: '$gray9',
-                          }}
-                        >
-                          <FontAwesomeIcon size="xs" icon={faCog} />
-                        </Flex>
-                        <Text style="body3">{contractKind}</Text>
-                      </Flex>
-
-                      <Flex
-                        align="center"
-                        css={{
-                          gap: '$1',
-                        }}
-                      >
-                        <Flex
-                          css={{
-                            color: '$gray9',
-                          }}
-                        >
-                          <FontAwesomeIcon size="xs" icon={faGlobe} />
-                        </Flex>
-                        <Text style="body3">{chainName}</Text>
-                      </Flex>
-
-                      {mintData && (
-                        <Flex
-                          align="center"
-                          css={{
-                            gap: '$1',
-                          }}
-                        >
-                          <Flex
-                            css={{
-                              color: '$green9',
-                            }}
-                          >
-                            <FontAwesomeIcon size="xs" icon={faSeedling} />
-                          </Flex>
-                          <Text style="body3">Minting Now</Text>
-                        </Flex>
-                      )}
-                    </Flex>
-                  </Box>
-                </Flex>
-              </Flex>
-              <Flex align="center">
-                <Flex css={{ alignItems: 'center', gap: '$3' }}>
-                  {collection?.floorAsk?.price?.amount?.raw && sweepSymbol ? (
-                    <Sweep
-                      collectionId={collection.id}
-                      openState={isSweepRoute ? sweepOpenState : undefined}
-                      buttonChildren={
-                        <Flex
-                          css={{ gap: '$2' }}
-                          align="center"
-                          justify="center"
-                        >
-                          <Text style="h6" as="h6" css={{ color: '$bg' }}>
-                            Collect
-                          </Text>
-                          <Text
-                            style="h6"
-                            as="h6"
-                            css={{ color: '$bg', fontWeight: 900 }}
-                          >
-                            <Flex
-                              css={{
-                                gap: '$1',
-                              }}
-                            >
-                              <FormatCrypto
-                                amount={
-                                  collection?.floorAsk?.price?.amount?.raw
-                                }
-                                decimals={
-                                  collection?.floorAsk?.price?.currency
-                                    ?.decimals
-                                }
-                                textStyle="h6"
-                                css={{ color: '$bg', fontWeight: 900 }}
-                                maximumFractionDigits={4}
-                              />
-                              {sweepSymbol}
-                            </Flex>
-                          </Text>
-                        </Flex>
-                      }
-                      buttonCss={{ '@lg': { order: 2 } }}
-                      mutate={mutate}
-                    />
-                  ) : null}
-                  {/* Collection Mint */}
-                  {mintData && mintPrice ? (
-                    <Mint
-                      collectionId={collection.id}
-                      openState={isMintRoute ? mintOpenState : undefined}
-                      buttonChildren={
-                        <Flex
-                          css={{ gap: '$2', px: '$2' }}
-                          align="center"
-                          justify="center"
-                        >
-                          {isSmallDevice && (
-                            <FontAwesomeIcon icon={faSeedling} />
-                          )}
-                          {!isSmallDevice && (
-                            <Text style="h6" as="h6" css={{ color: '$bg' }}>
-                              Mint
-                            </Text>
-                          )}
-
-                          {!isSmallDevice && (
-                            <Text
-                              style="h6"
-                              as="h6"
-                              css={{ color: '$bg', fontWeight: 900 }}
-                            >
-                              {`${mintPrice}`}
-                            </Text>
-                          )}
-                        </Flex>
-                      }
-                      buttonCss={{
-                        minWidth: 'max-content',
-                        whiteSpace: 'nowrap',
-                        flexShrink: 0,
-                        flexGrow: 1,
-                        justifyContent: 'center',
-                        px: '$2',
-                        maxWidth: '220px',
-                        '@md': {
-                          order: 1,
-                        },
-                      }}
-                      mutate={mutate}
-                    />
-                  ) : null}
-                  <CollectionOffer
-                    collection={collection}
-                    buttonChildren={<FontAwesomeIcon icon={faHand} />}
-                    buttonProps={{ color: mintData ? 'gray3' : 'primary' }}
-                    buttonCss={{ px: '$4' }}
-                    mutate={mutate}
-                  />
-                </Flex>
-              </Flex>
-            </Flex>
-
+            <CollectionPageHeader
+              collection={collection}
+              contractKind={collection?.contractKind}
+              chainName={chainName}
+              mintData={mintData}
+              mutate={mutate}
+            />
             <TabsList css={{ mt: 0 }}>
               <TabsTrigger value="items">Items</TabsTrigger>
               <TabsTrigger value="details">Details</TabsTrigger>
