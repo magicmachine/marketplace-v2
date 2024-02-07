@@ -30,7 +30,7 @@ export const useMapInfoControl = () => {
       )}, Lng: ${center.lng.toFixed(4)}`
     }
 
-    const updateCursorInfo = (lat, lng) => {
+    const updateCursorInfo = (lat: number, lng: number) => {
       cursorInfo.innerHTML = `Cursor - Lat: ${lat.toFixed(
         4
       )}, Lng: ${lng.toFixed(4)}`

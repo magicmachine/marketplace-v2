@@ -61,7 +61,7 @@ const PlotMap: React.FC<PlotMapProps> = ({ plots, mapTiles }) => {
 
 export default PlotMap
 
-const Plots = ({ plots }) => {
+const Plots = ({ plots }: { plots: Plot[] }) => {
   let plts = plots
   const onPlotClick = (plot: Plot, positions: any, i: number) => {
     console.log('clicked', plot, positions, i)

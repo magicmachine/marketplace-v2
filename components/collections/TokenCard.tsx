@@ -58,8 +58,10 @@ export default ({
 
   const is1155 = token?.token?.kind === 'erc1155'
 
+  let tokentoken: any = token?.token
+
   aspectRatio =
-    aspectRatio !== '1/1' ? aspectRatio : token?.token?.aspectRatio || '1/1'
+    aspectRatio !== '1/1' ? aspectRatio : tokentoken.aspectRatio || '1/1'
 
   return (
     <Box

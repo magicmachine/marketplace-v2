@@ -8,10 +8,11 @@ import Layout from 'components/Layout'
 import { Head } from 'components/Head'
 import { Text } from 'components/primitives'
 
-import { gridData, plotData, Plot } from 'components/map'
+import { gridData, plotData } from 'components/map'
 import dynamic from 'next/dynamic'
 import PlotListingsList from '../components/map/market/PlotsListingsList'
 import usePlotsMarket from '../components/map/market/usePlotsMarket'
+import { Plot } from '../components/map/types'
 
 const PlotMap = dynamic(() => import('components/map/PlotMap'), { ssr: false })
 

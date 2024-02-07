@@ -280,21 +280,8 @@ export const darkTheme = createTheme({
     secondary12: '$violetA12',
 
     //Gray
-    // gray1: '$slate1',
-    // gray2: '$slate2',
-    // gray3: '$slate3',
-    // gray4: '$slate4',
-    // gray5: '$slate5',
-    // gray6: '$slate6',
-    // gray7: '$slate7',
-    // gray8: '$slate8',
-    // gray9: '$slate9',
-    // gray10: '$slate10',
-    // gray11: '$slate11',
-    // gray12: '$slate12',
-
     slate0: 'hsl(240, 5.0%, 7.0%)',
-
+    // note we pushed these from slate0 to darken the low end
     gray1: '$slate0',
     gray2: '$slate0',
     gray3: '$slate0',
