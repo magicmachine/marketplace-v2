@@ -63,11 +63,11 @@ const Navbar = () => {
       <Box css={{ flex: 1 }}>
         <Flex align="center">
           <Link href={`/${routePrefix}`}>
-            <Box css={{ width: 46, cursor: 'pointer' }}>
+            <Box css={{ width: 150, cursor: 'pointer' }}>
               <Image
                 src="/logo/forgotten-runes-logo-white.png"
-                width={100}
-                height={50}
+                width={180}
+                height={90}
                 alt="FRWC Logo"
               />
             </Box>
