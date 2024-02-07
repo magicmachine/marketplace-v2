@@ -297,25 +297,38 @@ const IndexPage: NextPage<Props> = ({ assetId, ssr }) => {
               },
             }}
           >
-            <TokenMedia
-              token={token?.token}
-              videoOptions={{ autoPlay: true, muted: true }}
-              imageResolution={'large'}
-              style={{
-                width: '100%',
-                height: 'auto',
-                minHeight: isMounted && isSmallDevice ? 300 : 445,
-                borderRadius: 8,
-                overflow: 'hidden',
-              }}
-              onRefreshToken={() => {
-                mutate?.()
-                addToast?.({
-                  title: 'Refresh token',
-                  description: 'Request to refresh this token was accepted.',
-                })
-              }}
-            />
+            {token?.token?.contract ===
+            '0x521f9c7505005cfa19a8e5786a9c3c9c9f5e6f42' ? (
+              <iframe
+                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                frameBorder="0"
+                height="100%"
+                sandbox="allow-scripts"
+                src={token.token.metadata?.['mediaOriginal'] as string}
+                style={{ minHeight: '445px', width: '100%', height: 'auto' }}
+              ></iframe>
+            ) : (
+              <TokenMedia
+                token={token?.token}
+                videoOptions={{ autoPlay: true, muted: true }}
+                imageResolution={'large'}
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                  minHeight: isMounted && isSmallDevice ? 300 : 445,
+                  borderRadius: 8,
+                  overflow: 'hidden',
+                }}
+                onRefreshToken={() => {
+                  mutate?.()
+                  addToast?.({
+                    title: 'Refresh token',
+                    description: 'Request to refresh this token was accepted.',
+                  })
+                }}
+              />
+            )}
+
             <FullscreenMedia token={token} />
           </Box>
 
@@ -416,8 +429,8 @@ const IndexPage: NextPage<Props> = ({ assetId, ssr }) => {
                       title: 'Refresh token failed',
                       description: ratelimit
                         ? `This token was recently refreshed. The next available refresh is ${timeTill(
-                          ratelimit
-                        )}.`
+                            ratelimit
+                          )}.`
                         : `This token was recently refreshed. Please try again later.`,
                     })
 
@@ -453,7 +466,10 @@ const IndexPage: NextPage<Props> = ({ assetId, ssr }) => {
                   <Text style="subtitle3" color="subtle" css={{ mr: '$2' }}>
                     You own {countOwned}
                   </Text>
-                  <Link href={`/portfolio/${account.address || ''}`} legacyBehavior={true}>
+                  <Link
+                    href={`/portfolio/${account.address || ''}`}
+                    legacyBehavior={true}
+                  >
                     <Anchor
                       color="primary"
                       weight="normal"
@@ -600,8 +616,8 @@ const IndexPage: NextPage<Props> = ({ assetId, ssr }) => {
 
 type SSRProps = {
   collection?:
-  | paths['/collections/v7']['get']['responses']['200']['schema']
-  | null
+    | paths['/collections/v7']['get']['responses']['200']['schema']
+    | null
   tokens?: paths['/tokens/v6']['get']['responses']['200']['schema'] | null
 }
 
@@ -648,10 +664,10 @@ export const getServerSideProps: GetServerSideProps<{
       : {}
 
     let collectionQuery: paths['/collections/v7']['get']['parameters']['query'] =
-    {
-      id: tokens?.tokens?.[0]?.token?.collection?.id,
-      normalizeRoyalties: NORMALIZE_ROYALTIES,
-    }
+      {
+        id: tokens?.tokens?.[0]?.token?.collection?.id,
+        normalizeRoyalties: NORMALIZE_ROYALTIES,
+      }
 
     const collectionsPromise = fetcher(
       `${reservoirBaseUrl}/collections/v7`,
